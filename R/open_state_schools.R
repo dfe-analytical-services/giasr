@@ -1,4 +1,4 @@
-state_schools <- function(gias_date = Sys.Date()){
+state_schools <- function(gias_date = as.Date(cut(Sys.Date(), "month"))){
   # define NA strings
   na_strings <- c("NA", "NULL", "", "-", "Not applicable", "Does not apply", " ", "None", "..")
 
@@ -90,9 +90,13 @@ state_schools <- function(gias_date = Sys.Date()){
                                                                            type_of_establishment_name %in% la_maintained_list ~ "Local authority maintained schools"))
   state_schools <- dplyr::filter(state_school_flag,
                                  phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
+
+  state_schools
 }
 
-open_state_schools <- function(cut_date = Sys.Date()){
+open_state_schools <- function(cut_date = as.Date(cut(Sys.Date(), "month"))){
+  state_schools <- state_schools()
+
   open_state_schools <- dplyr::filter(state_schools,
                                       establishment_status_name %in% c("Open", "Open, but proposed to close") |
                                         close_date > cut_date &
