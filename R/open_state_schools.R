@@ -8,17 +8,21 @@ state_schools <- function(gias_date = as.Date(cut(Sys.Date(), "month"))){
   # define file path for GIAS data
   gias_dir <- file.path(tmp_dir, "gias")
 
-  # create the directory for GIAS data
-  dir.create(gias_dir)
+  # create the directory for GIAS data if it doesn't already exist
+  if(!dir.exists(gias_dir)){
+    dir.create(gias_dir)
+  }
 
-  # define GIAS URL using the specified GIAS date or today if not specified
+  # define GIAS URL using the specified GIAS date or 1st of the month if not specified
   gias_url <- paste0("https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/edubasealldata",gsub("-","",gias_date),".csv")
 
   # specify GIAS download filepath
   gias_download <- file.path(gias_dir, basename(gias_url))
 
-  # download GIAS data
-  download.file(gias_url, mode = "wb", method = "libcurl", destfile = gias_download)
+  # download GIAS data if not already available
+  if(!file.exists(gias_download)){
+    utils::download.file(gias_url, mode = "wb", method = "libcurl", destfile = gias_download)
+  }
 
   # get only data needed from GIAS dataset
   all_schools_type_status <- readr::read_csv(file = gias_download,
@@ -28,12 +32,12 @@ state_schools <- function(gias_date = as.Date(cut(Sys.Date(), "month"))){
   all_schools_type_status <- janitor::clean_names(all_schools_type_status)
 
   all_schools_type_status <- dplyr::transmute(all_schools_type_status,
-                                              urn,
-                                              type_of_establishment_name,
-                                              phase_of_education_name,
-                                              open_date = as.Date(open_date, "%d-%m-%Y"),
-                                              close_date = as.Date(close_date, "%d-%m-%Y"),
-                                              establishment_status_name)
+                                              .data$urn,
+                                              .data$type_of_establishment_name,
+                                              .data$phase_of_education_name,
+                                              open_date = as.Date(.data$open_date, "%d-%m-%Y"),
+                                              close_date = as.Date(.data$close_date, "%d-%m-%Y"),
+                                              .data$establishment_status_name)
 
   # list all non-special state funded school types
   state_funded_list <- c("Academy 16 to 19 sponsor led",
@@ -78,35 +82,37 @@ state_schools <- function(gias_date = as.Date(cut(Sys.Date(), "month"))){
 
   # create new variable to flag state funded establishments
   state_school_flag <- dplyr::mutate(all_schools_type_status,
-                                     phase_type_grouping = dplyr::case_when(phase_of_education_name == "Nursery" ~ "State-funded Nursery",
-                                                                            phase_of_education_name %in% c("Primary","Middle deemed primary") & type_of_establishment_name %in% state_funded_list ~ "State-funded Primary",
-                                                                            (phase_of_education_name %in% c("Secondary", "Middle deemed secondary", "16 plus", "Not applicable", "All-through") & type_of_establishment_name %in% state_funded_list) | type_of_establishment_name == "City technology college" ~ "State-funded Secondary",
-                                                                            type_of_establishment_name %in% c("Foundation special school", "Community special school", "Academy special converter", "Academy special sponsor led", "Free schools special") ~ "State-funded Special school",
-                                                                            type_of_establishment_name == "Non-maintained special school" ~ "Non-maintained special school",
-                                                                            type_of_establishment_name %in% c("Pupil referral unit", "Academy alternative provision sponsor led", "Free schools alternative provision", "Academy alternative provision converter") ~ "Pupil referral unit",
-                                                                            type_of_establishment_name %in% c("Other independent school", "Other independent special school") ~ "Independent school",
+                                     phase_type_grouping = dplyr::case_when(.data$phase_of_education_name == "Nursery" ~ "State-funded Nursery",
+                                                                            .data$phase_of_education_name %in% c("Primary","Middle deemed primary") & .data$type_of_establishment_name %in% state_funded_list ~ "State-funded Primary",
+                                                                            (.data$phase_of_education_name %in% c("Secondary", "Middle deemed secondary", "16 plus", "Not applicable", "All-through") & .data$type_of_establishment_name %in% state_funded_list) | .data$type_of_establishment_name == "City technology college" ~ "State-funded Secondary",
+                                                                            .data$type_of_establishment_name %in% c("Foundation special school", "Community special school", "Academy special converter", "Academy special sponsor led", "Free schools special") ~ "State-funded Special school",
+                                                                            .data$type_of_establishment_name == "Non-maintained special school" ~ "Non-maintained special school",
+                                                                            .data$type_of_establishment_name %in% c("Pupil referral unit", "Academy alternative provision sponsor led", "Free schools alternative provision", "Academy alternative provision converter") ~ "Pupil referral unit",
+                                                                            .data$type_of_establishment_name %in% c("Other independent school", "Other independent special school") ~ "Independent school",
                                                                             TRUE ~ "Other non-school institution"),
-                                     general_type_group = dplyr::case_when(type_of_establishment_name %in% academy_list ~ "Academies",
-                                                                           type_of_establishment_name %in% la_maintained_list ~ "Local authority maintained schools"))
+                                     general_type_group = dplyr::case_when(.data$type_of_establishment_name %in% academy_list ~ "Academies",
+                                                                           .data$type_of_establishment_name %in% la_maintained_list ~ "Local authority maintained schools"))
   state_schools <- dplyr::filter(state_school_flag,
-                                 phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
+                                 .data$phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
 
   state_schools
 }
 
 open_state_schools <- function(cut_date = as.Date(cut(Sys.Date(), "month"))){
-  state_schools <- state_schools()
+  all_state_schools <- state_schools()
 
-  open_state_schools <- dplyr::filter(state_schools,
-                                      establishment_status_name %in% c("Open", "Open, but proposed to close") |
-                                        close_date > cut_date &
-                                        (is.na(open_date) |
-                                        open_date <= cut_date))
+  open_state_schools <- dplyr::filter(all_state_schools,
+                                      .data$establishment_status_name %in% c("Open", "Open, but proposed to close") |
+                                        .data$close_date > cut_date &
+                                        (is.na(.data$open_date) |
+                                           .data$open_date <= cut_date))
 
   open_state_schools <- dplyr::select(open_state_schools,
-                                      urn = urn,
-                                      phase_type_grouping,
-                                      general_type_group)
+                                      urn = .data$urn,
+                                      .data$phase_type_grouping,
+                                      .data$general_type_group,
+                                      .data$type_of_establishment_name,
+                                      .data$phase_of_education_name)
 
   open_state_schools
 }
