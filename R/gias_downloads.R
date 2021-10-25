@@ -149,10 +149,10 @@ prep.gias.links.data <- function(gias_date){
 }
 
 
-#' Clean GIAS Establishment Links Data
-#' @param gias_date the file date of the GIAS cut, defaults to first day of current month if not entered
+#' Add establishment info to links data file
+#' @param gias_date the file date of the GIAS cut, defaults to first day of current month if not provided
 #' @noRd
-clean.gias.links.data <- function(gias_date){
+links.data.add.info <- function(gias_date){
   # set gias_date to start of month if not provided
   if(missing(gias_date)){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
@@ -162,45 +162,92 @@ clean.gias.links.data <- function(gias_date){
 
   links_data <- prep.gias.links.data(gias_date)
 
-  successor_link <- dplyr::left_join(state_schools_w_status, links_data, by = "urn")
+  links_data <- dplyr::mutate(links_data,
+                              urn = as.character(urn),
+                              link_urn = as.character(link_urn),
+                              link_established_date = as.Date(link_established_date, "%d-%m-%Y"))
 
-  # remove entries with no links
-  successor_link <- dplyr::filter(successor_link, !is.na(link_urn))
 
   # remove links explicitly flagged predecessors or sixth form centres
-  successor_link <- dplyr::filter(successor_link, grepl('Pred|Sixth', link_type))
+  successor_links <- dplyr::filter(links_data, !grepl('Pred|Sixth', link_type))
 
-  # remove duplicates
-  successor_link <- dplyr::distinct(successor_link, urn, link_urn, .keep_all = TRUE)
+  # get links explicitly flagged as predecessor links (excl. sixth form centres)
+  predecessor_links <- dplyr::filter(links_data, !grepl('Succ|Sixth', link_type))
+
+  predecessor_links <- dplyr::transmute(predecessor_links,
+                                        predecessor_urn = link_urn,
+                                        successor_urn = urn,
+                                        predecessor_link_type = link_type,
+                                        predecessor_link_established_date = link_established_date)
+
+  # full join with predecessors to fill in gaps of missing pairs
+  successor_links <- dplyr::full_join(successor_links, predecessor_links, by = c("urn" = "predecessor_urn"))
+
+  successor_links <- dplyr::transmute(successor_links,
+                                      urn,
+                                      link_urn = dplyr::case_when(is.na(link_urn) ~ successor_urn,
+                                                                  TRUE ~ link_urn),
+                                      link_established_date = dplyr::case_when(is.na(link_established_date) ~ predecessor_link_established_date,
+                                                                              TRUE ~ link_established_date),
+                                      successor_link_type = link_type,
+                                      predecessor_link_type)
+
+  successor_links <- dplyr::distinct(successor_links,
+                                     urn, link_urn,
+                                     .keep_all = TRUE)
+
+  # add additional status data for URN
+  successor_links_status <- dplyr::left_join(state_schools_w_status, successor_links, by = "urn")
+
+  # remove entries with no links
+  successor_links_status <- dplyr::filter(successor_links_status, !is.na(link_urn))
 
   # make explicit that the establishment data relates to the predecessor URN (URN)
-  add_predecessor_urn_info <- dplyr::transmute(successor_link,
-                                           urn,
-                                           link_urn,
-                                           link_name,
-                                           link_established_date,
-                                           urn_establishment_status = establishment_status_name,
-                                           urn_open_date = open_date,
-                                           urn_close_date = close_date)
+  predecessor_info <- dplyr::transmute(successor_links_status,
+                                       urn,
+                                       link_urn,
+                                       link_established_date,
+                                       successor_link_type,
+                                       predecessor_link_type,
+                                       urn_name = establishment_name,
+                                       urn_establishment_status = establishment_status,
+                                       urn_open_date = open_date,
+                                       urn_close_date = close_date,
+                                       urn_reason_establishment_closed = as.numeric(reason_establishment_closed),
+                                       urn_reason_establishment_opened = as.numeric(reason_establishment_opened),
+                                       urn_phase_of_education = phase_of_education_name,
+                                       urn_statutory_low_age = statutory_low_age,
+                                       urn_statutory_high_age = statutory_high_age)
 
-  add_successor_urn_info <- dplyr::left_join(add_predecessor_urn_info,
-                                             establishment_status_data,
-                                             by = c("link_urn" = "urn"))
+  # add additional status data for link_urn
+  successor_info <- dplyr::left_join(predecessor_info,
+                                     state_schools_w_status,
+                                     by = c("link_urn" = "urn"))
 
-  urn_info <- dplyr::transmute(add_successor_urn_info,
+  urn_info <- dplyr::transmute(successor_info,
                                urn,
                                link_urn,
-                               link_name,
                                link_established_date,
+                               successor_link_type,
+                               predecessor_link_type,
+                               urn_name,
                                urn_establishment_status,
                                urn_open_date,
                                urn_close_date,
+                               urn_reason_establishment_closed,
+                               urn_reason_establishment_opened,
+                               urn_phase_of_education,
+                               urn_statutory_low_age,
+                               urn_statutory_high_age,
+                               link_name = establishment_name,
                                link_establishment_status = establishment_status,
                                link_open_date = open_date,
-                               link_close_date = close_date)
+                               link_close_date = close_date,
+                               link_reason_establishment_opened = as.numeric(reason_establishment_opened),
+                               link_reason_establishment_closed = as.numeric(reason_establishment_closed),
+                               link_phase_of_education = phase_of_education_name,
+                               link_statutory_low_age = statutory_low_age,
+                               link_statutory_high_age = statutory_high_age)
 
-  # remove proposed to open successors - they aren't yet linked and the URN often changes
-  opened_successors <- dplyr::filter(urn_info, link_establishment_status != "Proposed to open")
-
-
+  urn_info
 }

@@ -15,7 +15,7 @@ current.state.schools(gias_date, open_date)
 \item{open_date}{default is to use the 1st of the current month for open schools. However, to reproduce historic analysis or identify more recently open schools the date can be set using the "\%Y-\%m-\%d" format.}
 }
 \value{
-A list of state funded establishment URNs along with
+A list of state funded establishment URNs along with the following variables:
 \itemize{
 \item \code{phase_type_grouping}: State-funded Nursery, State-funded Primary, State-funded Secondary, State-funded Special school, Pupil referral unit
 \item \code{general_type_group}: Academies, Local Authority Maintained
@@ -24,7 +24,7 @@ A list of state funded establishment URNs along with
 }
 }
 \description{
-The \code{state.schools()} function is used to identify a list of all schools that are state funded establishments in the GIAS all establishment data released on the selected date.
+The \code{state.schools()} function is used to identify a list of all schools that are state funded establishments in the GIAS all establishment data released on the selected date. \cr
 While \code{current.state.schools()} identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
 }
 \details{
@@ -57,7 +57,7 @@ Schools identified as state funded establishments align with those in external r
 }
 \section{Functions}{
 \itemize{
-\item \code{state.schools}: Identifies all state funded establishments (historc and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
+\item \code{state.schools}: Identifies all state funded establishments (historic and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
 
 \item \code{current.state.schools}: Identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
 }}

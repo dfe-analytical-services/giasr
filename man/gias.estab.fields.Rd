@@ -2,7 +2,7 @@
 % Please edit documentation in R/gias_downloads.R
 \name{gias.estab.fields}
 \alias{gias.estab.fields}
-\title{Import GIAS Establishment Fields Data}
+\title{Import GIAS Data}
 \usage{
 gias.estab.fields(gias_date)
 }
@@ -13,8 +13,9 @@ gias.estab.fields(gias_date)
 Dataframe of GIAS establishment fields data with standardised names and variable class assigned.
 }
 \description{
-Imports GIAS Establishment Fields Data from https://www.get-information-schools.service.gov.uk/Downloads.
+\code{gias.estab.fields} Imports GIAS Establishment Fields Data from https://www.get-information-schools.service.gov.uk/Downloads.
 Standardises variable names to be unique and consist only of the _ character, numbers, and letters and sets all date and numeric variables to relevant classes.
+\code{gias.links.data} Imports GIAS Links Data.
 }
 \examples{
 gias.estab.fields("2021-06-01")

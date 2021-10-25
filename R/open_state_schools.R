@@ -1,5 +1,5 @@
 #' Identify State Funded Establishments with Additional Data
-#' @param gias_date the file date of the GIAS cut, defaults to first day of current month if not entered
+#' @param gias_date the file date of the GIAS cut, defaults to first day of current month if not provided
 #' @noRd
 
 state.schools.data <- function(gias_date){
@@ -22,11 +22,16 @@ state.schools.data <- function(gias_date){
 
   all_schools_type_status <- dplyr::transmute(all_schools_type_status,
                                               .data$urn,
+                                              .data$establishment_name,
                                               .data$type_of_establishment_name,
                                               .data$phase_of_education_name,
                                               open_date = as.Date(.data$open_date, "%d-%m-%Y"),
                                               close_date = as.Date(.data$close_date, "%d-%m-%Y"),
-                                              .data$establishment_status_name)
+                                              reason_establishment_closed = .data$reason_establishment_closed_code,
+                                              reason_establishment_opened = .data$reason_establishment_opened_code,
+                                              establishment_status = .data$establishment_status_name,
+                                              .data$statutory_low_age,
+                                              .data$statutory_high_age)
 
   # list all non-special state funded school types
   state_funded_list <- c("Academy 16 to 19 sponsor led",
@@ -82,7 +87,7 @@ state.schools.data <- function(gias_date){
                                      general_type_group = dplyr::case_when(.data$type_of_establishment_name %in% academy_list ~ "Academies",
                                                                            .data$type_of_establishment_name %in% la_maintained_list ~ "Local authority maintained schools"))
   state_schools_data <- dplyr::filter(state_school_flag,
-                                 .data$phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
+                                      .data$phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
 
   state_schools_data
 }
@@ -90,7 +95,7 @@ state.schools.data <- function(gias_date){
 
 #' Identify State Funded Establishments
 #'
-#' The `state.schools()` function is used to identify a list of all schools that are state funded establishments in the GIAS all establishment data released on the selected date.
+#' The `state.schools()` function is used to identify a list of all schools that are state funded establishments in the GIAS all establishment data released on the selected date. \cr
 #' While `current.state.schools()` identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
 #'
 #' @usage state.schools(gias_date)
@@ -124,7 +129,7 @@ state.schools.data <- function(gias_date){
 #' * Voluntary aided school
 #' * Voluntary controlled school
 #'
-#' @return A list of state funded establishment URNs along with
+#' @return A list of state funded establishment URNs along with the following variables:
 #' * `phase_type_grouping`: State-funded Nursery, State-funded Primary, State-funded Secondary, State-funded Special school, Pupil referral unit
 #' * `general_type_group`: Academies, Local Authority Maintained
 #' * `type_of_establishment_name`: GIAS fields
@@ -133,8 +138,7 @@ state.schools.data <- function(gias_date){
 #' @examples current.state.schools("2021-06-01", "2021-06-01")
 #' @examples state.schools("2021-06-01")
 #'
-#' @describeIn state.schools Identifies all state funded establishments (historc and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
-
+#' @describeIn state.schools Identifies all state funded establishments (historic and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
 
 state.schools <- function(gias_date){
   # set gias_date to start of month if not provided
@@ -172,7 +176,7 @@ current.state.schools <- function(gias_date, open_date){
   all_state_schools <- state.schools.data(gias_date)
 
   open_state_schools <- dplyr::filter(all_state_schools,
-                                      .data$establishment_status_name %in% c("Open", "Open, but proposed to close") |
+                                      .data$establishment_status %in% c("Open", "Open, but proposed to close") |
                                         .data$close_date > open_date &
                                         (is.na(.data$open_date) |
                                            .data$open_date <= open_date))
