@@ -25,6 +25,8 @@ download.gias.estab.fields <- function(gias_date){
   # specify GIAS download filepath
   gias_download <- file.path(gias_dir, basename(gias_url))
 
+  options(timeout = max(300, getOption("timeout")))
+
   # download GIAS data if not already available
   if(!file.exists(gias_download)){
     utils::download.file(gias_url, mode = "wb", method = "libcurl", destfile = gias_download)
@@ -112,6 +114,8 @@ download.gias.links.data <- function(gias_date){
 
   # define GIAS Links URL using the specified GIAS date or 1st of the month if not specified
   gias_links_url <- paste0("https://ea-edubase-api-prod.azurewebsites.net/edubase/downloads/public/links_edubasealldata",gsub("-","",gias_date),".csv")
+
+  options(timeout = max(300, getOption("timeout")))
 
   # specify GIAS download filepath
   gias_links_download <- file.path(gias_dir, basename(gias_links_url))

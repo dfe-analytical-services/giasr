@@ -100,6 +100,8 @@ links.data.clean.links <- function(gias_date){
 
   non_circular_links <- dplyr::filter(non_circular_links, same_urn != 1)
 
+  non_circular_links <- dplyr::distinct(non_circular_links)
+
   identify_splits <- dplyr::group_by(non_circular_links, urn)
 
   identify_splits <- dplyr::mutate(identify_splits,
