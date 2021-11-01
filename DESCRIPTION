@@ -16,4 +16,8 @@ Imports:
     dplyr,
     janitor,
     readr,
-    rlang
+    rlang,
+    tidyr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

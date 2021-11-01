@@ -17,9 +17,7 @@ academies.trust.data(gias_date, cut_off_date, urn_link_type = "ofsted")
 Dataframe of academies and trust history.
 }
 \description{
-\code{academies.trust.data} Imports GIAS Academies Trust Membership History Data from https://www.get-information-schools.service.gov.uk/Downloads.
-Standardises variable names to be unique and consist only of characters, numbers, and letters and sets all date and numeric variables to relevant classes.
-Removes duplicates and adds \code{history_order} variable to show 1 = current trust.
+\code{academies.trust.data()} imports GIAS Academies Trust Membership History Data from https://www.get-information-schools.service.gov.uk/Downloads. Standardises variable names to be unique and consist only of characters, numbers, and letters and sets all date and numeric variables to relevant classes. Removes duplicates and adds a history_order variable to show 1 = current trust.
 }
 \details{
 Returns the following variables in a df:
@@ -36,6 +34,5 @@ Returns the following variables in a df:
 }
 \examples{
 academies.trust.data("2021-06-01", "2021-06-01", urn_link_type = "all")
-academies.trust.data("2021-06-01", "2021-06-01")
 
 }

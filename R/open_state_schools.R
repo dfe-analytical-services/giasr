@@ -139,6 +139,8 @@ state.schools.data <- function(gias_date){
 #' @examples state.schools("2021-06-01")
 #'
 #' @describeIn state.schools Identifies all state funded establishments (historic and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
+#'
+#' @export
 
 state.schools <- function(gias_date){
   # set gias_date to start of month if not provided
@@ -160,6 +162,8 @@ state.schools <- function(gias_date){
 
 
 #' @describeIn state.schools Identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
+#'
+#' @export
 
 current.state.schools <- function(gias_date, open_date){
   # set gias_date to start of month if not provided
