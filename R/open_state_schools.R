@@ -101,7 +101,7 @@ state.schools.data <- function(gias_date){
 #' @usage state.schools(gias_date)
 #'
 #' @param gias_date default is to get GIAS data from the 1st of the current month. However, to reproduce historic analysis or to use more recent data the date can be set using the "%Y-%m-%d" format.
-#' @param open_date default is to use the 1st of the current month for open schools. However, to reproduce historic analysis or identify more recently open schools the date can be set using the "%Y-%m-%d" format.
+#' @param schools_open_date default is to use the 1st of the current month for open schools. However, to reproduce historic analysis or identify more recently open schools the date can be set using the "%Y-%m-%d" format.
 #'
 #' @details Schools identified as state funded establishments align with those in external reporting. These are:
 #'
@@ -165,15 +165,15 @@ state.schools <- function(gias_date){
 #'
 #' @export
 
-current.state.schools <- function(gias_date, open_date){
+current.state.schools <- function(gias_date, schools_open_date){
   # set gias_date to start of month if not provided
   if(missing(gias_date)){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
-  # set open_date to start of month if not provided
-  if(missing(open_date)){
-    open_date <- as.Date(cut(Sys.Date(), "month"))
+  # set schools_open_date to start of month if not provided
+  if(missing(schools_open_date)){
+    schools_open_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
 
@@ -181,9 +181,9 @@ current.state.schools <- function(gias_date, open_date){
 
   open_state_schools <- dplyr::filter(all_state_schools,
                                       .data$establishment_status %in% c("Open", "Open, but proposed to close") |
-                                        .data$close_date > open_date &
+                                        .data$close_date > schools_open_date &
                                         (is.na(.data$open_date) |
-                                           .data$open_date <= open_date))
+                                           .data$open_date <= schools_open_date))
 
   open_state_schools <- dplyr::select(open_state_schools,
                                       urn = .data$urn,
