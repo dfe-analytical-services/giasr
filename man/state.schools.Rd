@@ -7,12 +7,12 @@
 \usage{
 state.schools(gias_date)
 
-current.state.schools(gias_date, open_date)
+current.state.schools(gias_date, schools_open_date)
 }
 \arguments{
 \item{gias_date}{default is to get GIAS data from the 1st of the current month. However, to reproduce historic analysis or to use more recent data the date can be set using the "\%Y-\%m-\%d" format.}
 
-\item{open_date}{default is to use the 1st of the current month for open schools. However, to reproduce historic analysis or identify more recently open schools the date can be set using the "\%Y-\%m-\%d" format.}
+\item{schools_open_date}{default is to use the 1st of the current month for open schools. However, to reproduce historic analysis or identify more recently open schools the date can be set using the "\%Y-\%m-\%d" format.}
 }
 \value{
 A list of state funded establishment URNs along with the following variables:
