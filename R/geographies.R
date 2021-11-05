@@ -32,9 +32,9 @@ lad.lookup <- function(gias_date, schools_open_date){
   state_schools <- state.schools.data(gias_date)
 
   state_schools <- dplyr::select(state_schools,
-                                 urn,
-                                 open_date,
-                                 close_date)
+                                 .data$urn,
+                                 .data$open_date,
+                                 .data$close_date)
 
   gias_location_data <- dplyr::select(gias_data,
                                       .data$urn,
@@ -64,7 +64,7 @@ lad.lookup <- function(gias_date, schools_open_date){
 
   # download from the URL to the filepath specified
   if(!file.exists(file_path_lads_2018)){
-    download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file.path(file_path_lads_2018))
+    utils::download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file.path(file_path_lads_2018))
   }
 
   lads_2018 <- sf::read_sf(file_path_lads_2018)
@@ -94,8 +94,8 @@ lad.lookup <- function(gias_date, schools_open_date){
   schools_w_e_n <- as.data.frame(school_location_data)
 
   schools_w_e_n <- dplyr::select(schools_w_e_n,
-                                 -intersection,
-                                 -geometry)
+                                 -.data$intersection,
+                                 -.data$geometry)
 
   # Create a list of LADs that have changed between 2018 and 2021 (LADs listed in GIAS)
   lad_changes <- c("Bournemouth, Christchurch and Poole",

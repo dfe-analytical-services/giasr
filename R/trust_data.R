@@ -270,7 +270,7 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   academy_trust_history <- dplyr::ungroup(academy_trust_history)
 
   academy_trust_history <- dplyr::left_join(academy_trust_history,
-                                            dplyr::select(trust_list, .data$group_id, .data$group_type),
+                                            dplyr::select(trust_list, .data$group_id, .data$group_name, .data$group_type),
                                             by = "group_id")
 
   academy_trust_history

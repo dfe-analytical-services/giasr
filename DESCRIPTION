@@ -17,6 +17,7 @@ Imports:
     janitor,
     readr,
     rlang,
+    sf,
     tidyr
 Suggests: 
     testthat (>= 3.0.0)
