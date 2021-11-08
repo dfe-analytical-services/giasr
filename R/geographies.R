@@ -64,7 +64,7 @@ lad.lookup <- function(gias_date, schools_open_date){
 
   # download from the URL to the filepath specified
   if(!file.exists(file_path_lads_2018)){
-    utils::download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file.path(file_path_lads_2018))
+    utils::download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file_path_lads_2018)
   }
 
   lads_2018 <- sf::read_sf(file_path_lads_2018)
