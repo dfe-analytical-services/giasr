@@ -28,9 +28,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     }
 
   # Create temp directory ---------------------------------------------------
-  if(!exists(tmp_dir)){
-    tmp_dir <- tempdir()
-    }
+  tmp_dir <- tempdir()
 
   pipeline_dir <- file.path(tmp_dir, "pipeline")
 
@@ -49,7 +47,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   current_pipeline_url <- tibble::as_tibble(current_pipeline_url)
 
-  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", value) & grepl(".xlsx", value))
+  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", .data$value) & grepl(".xlsx", .data$value))
 
   current_pipeline_url <- dplyr::slice_head(current_pipeline_url) # leaves only the top link (usually the most recent)
 
@@ -67,14 +65,14 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     current_pipeline_sponsored <- readxl::read_xlsx(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor Pipeline")
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
     current_pipeline_sponsored <- dplyr::mutate(current_pipeline_sponsored,
-                                                project_approval_month = as.Date(project_approval_month, "%Y-%m-%d"),
-                                                proposed_opening_date = as.Date(proposed_opening_date, "%Y-%m-%d"))
+                                                project_approval_month = as.Date(.data$project_approval_month, "%Y-%m-%d"),
+                                                proposed_opening_date = as.Date(.data$proposed_opening_date, "%Y-%m-%d"))
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
-                                                        urn,
-                                                        application_date = project_approval_month,
-                                                        name_of_matched_sponsor,
-                                                        proposed_opening_date,
+                                                        .data$urn,
+                                                        application_date = .data$project_approval_month,
+                                                        .data$name_of_matched_sponsor,
+                                                        .data$proposed_opening_date,
                                                         academy_type = "sponsored")
 
     pipeline_info <- current_sponsored_pipeline_info
@@ -84,13 +82,13 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     current_pipeline_converter <- readxl::read_xlsx(pipeline_file, skip = 7, na = na_strings, sheet = "Converter Pipeline")
     current_pipeline_converter <- janitor::clean_names(current_pipeline_converter)
     current_pipeline_converter <- dplyr::mutate(current_pipeline_converter,
-                                                application_date = as.Date(application_date, "%Y-%m-%d"),
-                                                application_approved_date = as.Date(application_approved_date, "%Y-%m-%d"))
+                                                application_date = as.Date(.data$application_date, "%Y-%m-%d"),
+                                                application_approved_date = as.Date(.data$application_approved_date, "%Y-%m-%d"))
 
     current_converter_pipeline_info <- dplyr::transmute(current_pipeline_converter,
-                                                        urn,
-                                                        application_date,
-                                                        approval_date = application_approved_date,
+                                                        .data$urn,
+                                                        .data$application_date,
+                                                        approval_date = .data$application_approved_date,
                                                         academy_type = "converter")
 
     pipeline_info <- current_converter_pipeline_info

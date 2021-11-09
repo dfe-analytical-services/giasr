@@ -16,8 +16,11 @@ Imports:
     dplyr,
     janitor,
     readr,
+    readxl,
     rlang,
+    rvest,
     sf,
+    tibble,
     tidyr
 Suggests: 
     testthat (>= 3.0.0)
