@@ -65,8 +65,8 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     current_pipeline_sponsored <- readxl::read_xlsx(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor Pipeline")
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
     current_pipeline_sponsored <- dplyr::mutate(current_pipeline_sponsored,
-                                                project_approval_month = as.Date(.data$project_approval_month, "%Y-%m-%d"),
-                                                proposed_opening_date = as.Date(.data$proposed_opening_date, "%Y-%m-%d"))
+                                                project_approval_month = as.Date(format(.data$project_approval_month, "%Y-%m-%d"),
+                                                proposed_opening_date = as.Date(format(.data$proposed_opening_date, "%Y-%m-%d"))))
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
                                                         .data$urn,
@@ -82,8 +82,8 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     current_pipeline_converter <- readxl::read_xlsx(pipeline_file, skip = 7, na = na_strings, sheet = "Converter Pipeline")
     current_pipeline_converter <- janitor::clean_names(current_pipeline_converter)
     current_pipeline_converter <- dplyr::mutate(current_pipeline_converter,
-                                                application_date = as.Date(.data$application_date, "%Y-%m-%d"),
-                                                application_approved_date = as.Date(.data$application_approved_date, "%Y-%m-%d"))
+                                                application_date = as.Date(format(.data$application_date, "%Y-%m-%d")),
+                                                application_approved_date = as.Date(format(.data$application_approved_date, "%Y-%m-%d")))
 
     current_converter_pipeline_info <- dplyr::transmute(current_pipeline_converter,
                                                         .data$urn,
@@ -97,9 +97,8 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 # Consolidate lists ----------------------------------------------------
 
   if(converter == TRUE & sponsored == TRUE){
-    consolidated_current_pipeline_info <- dplyr::full_join(current_sponsored_pipeline_info,
-                                                           current_converter_pipeline_info,
-                                                           by = "urn")
+    consolidated_current_pipeline_info <- dplyr::bind_rows(current_sponsored_pipeline_info,
+                                                           current_converter_pipeline_info)
 
     pipeline_info <- consolidated_current_pipeline_info
   }
