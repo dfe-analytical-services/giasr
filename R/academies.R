@@ -70,7 +70,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
                                                         .data$urn,
-                                                        application_date = .data$project_approval_month,
+                                                        approval_date = .data$project_approval_month,
                                                         .data$name_of_matched_sponsor,
                                                         .data$proposed_opening_date,
                                                         academy_type = "sponsored")
