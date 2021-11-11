@@ -55,6 +55,28 @@ lad.lookup <- function(gias_date, schools_open_date){
                                           (is.na(.data$close_date) | .data$close_date > schools_open_date))
   }
 
+  # Create a list of LADs that have changed between 2018 and 2021 (LADs listed in GIAS)
+  lad_changes <- c("Bournemouth, Christchurch and Poole",
+                   "Somerset West and Taunton",
+                   "West Suffolk",
+                   "East Suffolk",
+                   "Dorset",
+                   "Buckinghamshire",
+                   "North Northamptonshire",
+                   "West Northamptonshire")
+
+  # get LAD info for those which have unchanged
+  school_location_data <- dplyr::mutate(gias_location_data,
+                                        lad_2018 = dplyr::case_when(!(.data$district_administrative_name %in% lad_changes) ~ .data$district_administrative_name))
+
+  schools_w_2018_lads <- dplyr::filter(school_location_data,
+                                       !is.na(.data$lad_2018))
+
+  schools_w_2018_lads <- dplyr::select(schools_w_2018_lads,
+                                       .data$urn,
+                                       .data$lad_2018,
+                                       lad_2018cd = .data$district_administrative_code)
+
   # GET LAD SPATIAL DATA
   # NOTE: This is to the full resolution file as the lower resolution data omits schools that are on the boundaries cut out when generalised this is therefore a large download
   geojson_url <- "https://opendata.arcgis.com/datasets/c8165cd6d0e7486699dccaa92b421469_0.geojson" # NB this is UK boundaries
@@ -69,62 +91,56 @@ lad.lookup <- function(gias_date, schools_open_date){
 
   lads_2018 <- sf::read_sf(file_path_lads_2018)
 
-  school_location_data <- dplyr::filter(gias_location_data,
-                                        !is.na(.data$easting) & .data$easting != "0")
+  no_2018_lad <- dplyr::filter(school_location_data,
+                               is.na(.data$lad_2018))
 
-  school_location_data <- dplyr::transmute(school_location_data,
-                                           .data$urn,
-                                           longitude = as.numeric(.data$easting),
-                                           latitude = as.numeric(.data$northing))
+  no_2018_lad <- dplyr::filter(no_2018_lad,
+                               !is.na(.data$easting) & .data$easting != "0")
+
+  no_2018_lad <- dplyr::transmute(no_2018_lad,
+                                  .data$urn,
+                                  longitude = as.numeric(.data$easting),
+                                  latitude = as.numeric(.data$northing))
 
   # convert eastings and northings to long lat
-  school_location_data <- sf::st_as_sf(school_location_data,
-                                       coords = c("longitude", "latitude"),
-                                       crs = sf::st_crs(27700))
+  no_2018_lad <- sf::st_as_sf(no_2018_lad,
+                              coords = c("longitude", "latitude"),
+                              crs = sf::st_crs(27700))
 
-  school_location_data <- sf::st_transform(school_location_data,
-                                           crs = sf::st_crs(4326))
+  no_2018_lad <- sf::st_transform(no_2018_lad,
+                                  crs = sf::st_crs(4326))
 
-  school_location_data$intersection <- as.integer(sf::st_intersects(school_location_data,lads_2018))
+  no_2018_lad$intersection <- as.integer(sf::st_intersects(no_2018_lad,lads_2018))
 
-  school_location_data$lad_2018 <- lads_2018$lad18nm[school_location_data$intersection]
+  no_2018_lad$lad_2018 <- lads_2018$lad18nm[no_2018_lad$intersection]
 
-  school_location_data$lad_2018cd <- lads_2018$lad18cd[school_location_data$intersection]
+  no_2018_lad$lad_2018cd <- lads_2018$lad18cd[no_2018_lad$intersection]
 
-  schools_w_e_n <- as.data.frame(school_location_data)
+  schools_w_e_n <- as.data.frame(no_2018_lad)
 
   schools_w_e_n <- dplyr::select(schools_w_e_n,
                                  -.data$intersection,
                                  -.data$geometry)
 
-  # Create a list of LADs that have changed between 2018 and 2021 (LADs listed in GIAS)
-  lad_changes <- c("Bournemouth, Christchurch and Poole",
-                   "Somerset West and Taunton",
-                   "West Suffolk",
-                   "East Suffolk",
-                   "Dorset",
-                   "Buckinghamshire",
-                   "North Northamptonshire",
-                   "West Northamptonshire")
-
   # get schools that have LAD info but no eastings/northings data
-  schools_no_e_n <- dplyr::filter(gias_location_data,
+  schools_no_e_n <- dplyr::filter(school_location_data,
+                                  is.na(.data$lad_2018))
+
+  schools_no_e_n <- dplyr::filter(schools_no_e_n,
                                   is.na(.data$easting) | .data$easting == 0)
 
 
-  schools_no_e_n <- dplyr::mutate(schools_no_e_n,
-                                  lad_2018 = dplyr::case_when(is.na(.data$district_administrative_name) ~ "no data",
-                                                              .data$district_administrative_name %in% lad_changes ~ paste0(.data$district_administrative_name, "*"),
-                                                              TRUE ~ .data$district_administrative_name))
+  schools_no_e_n <- dplyr::transmute(schools_no_e_n,
+                                     .data$urn,
+                                     lad_2018 = dplyr::case_when(is.na(.data$district_administrative_name) ~ "no data",
+                                                                 .data$district_administrative_name %in% lad_changes ~ paste0(.data$district_administrative_name, "*"),
+                                                                 TRUE ~ .data$district_administrative_name),
+                                     lad_2018cd = dplyr::case_when(is.na(.data$district_administrative_code) ~ "",
+                                                                   .data$district_administrative_name %in% lad_changes ~ paste0(.data$district_administrative_code, "*"),
+                                                                   TRUE ~ .data$district_administrative_code))
 
-
-  schools_no_e_n <- dplyr::select(schools_no_e_n,
-                                  .data$urn,
-                                  .data$district_administrative_name,
-                                  .data$district_administrative_code,
-                                  .data$lad_2018)
-
-  school_lads_2018 <- dplyr::bind_rows(schools_w_e_n,
+  school_lads_2018 <- dplyr::bind_rows(schools_w_2018_lads,
+                                       schools_w_e_n,
                                        schools_no_e_n)
 
   school_lads <- dplyr::transmute(school_lads_2018,
