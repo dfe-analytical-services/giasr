@@ -25,7 +25,7 @@ download.gias.estab.fields <- function(gias_date){
   # specify GIAS download filepath
   gias_download <- file.path(gias_dir, basename(gias_url))
 
-  options(timeout = max(300, getOption("timeout")))
+  options(timeout = max(500, getOption("timeout")))
 
   # download GIAS data if not already available
   if(!file.exists(gias_download)){
@@ -152,6 +152,8 @@ prep.gias.links.data <- function(gias_date){
 
   gias_links_data <- dplyr::mutate(gias_links_data,
                                    link_established_date = as.Date(.data$link_established_date, "%d-%m-%Y"))
+
+  gias_links_data
 }
 
 
@@ -186,12 +188,14 @@ links.data.add.info <- function(gias_date){
                               link_urn = as.character(.data$link_urn),
                               link_established_date = as.Date(.data$link_established_date, "%d-%m-%Y"))
 
+  # remove sixth form centres
+  links_data <- dplyr::filter(links_data, !grepl("Sixth", .data$link_type, ignore.case = TRUE))
 
-  # remove links explicitly flagged predecessors or sixth form centres
-  successor_links <- dplyr::filter(links_data, !grepl('Pred|Sixth', .data$link_type))
+  # filter to show only successors
+  successor_links <- dplyr::filter(links_data, grepl('Succ', .data$link_type, ignore.case = TRUE))
 
-  # get links explicitly flagged as predecessor links (excl. sixth form centres)
-  predecessor_links <- dplyr::filter(links_data, !grepl('Succ|Sixth', .data$link_type))
+  # filter to show only predecessors
+  predecessor_links <- dplyr::filter(links_data, grepl('Pred', .data$link_type, ignore.case = TRUE))
 
   predecessor_links <- dplyr::transmute(predecessor_links,
                                         predecessor_urn = .data$link_urn,

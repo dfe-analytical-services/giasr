@@ -102,15 +102,8 @@ links.data.clean.links <- function(gias_date){
 
   non_circular_links <- dplyr::distinct(non_circular_links)
 
-  identify_splits <- dplyr::group_by(non_circular_links, .data$urn)
-
-  identify_splits <- dplyr::mutate(identify_splits,
-                                   n_schools = dplyr::n())
-
-  splits_removed <- dplyr::filter(identify_splits, .data$n_schools == 1)
-
-  final_links_clean <- dplyr::select(splits_removed,
-                                     -.data$n_schools, -.data$flipped, -.data$split, -.data$same_urn,
+  final_links_clean <- dplyr::select(non_circular_links,
+                                     -.data$flipped, -.data$split, -.data$same_urn,
                                      -.data$urn_open_date, -.data$link_close_date,
                                      -.data$urn_reason_establishment_opened, -.data$link_reason_establishment_closed)
 
@@ -205,7 +198,6 @@ prep.ofsted.links.data <- function(gias_date){
   # use link_type from links data to remove links flagged as amalgamations, mergers, or splits
   flag_amalgamations_mergers_splits <- dplyr::mutate(final_links_clean,
                                                      discounted_predecessor = dplyr::case_when(grepl('amal|merg|split', .data$successor_link_type , ignore.case = TRUE) ~ 1,
-                                                                                               grepl('amal|merg|split', .data$predecessor_link_type , ignore.case = TRUE) ~ 1,
                                                                                                is.na(.data$urn_close_date) | is.na(.data$link_open_date) ~ 0, # flag as explicitly not amalgamations so they're not picked up by the next step
                                                                                                .data$urn_close_date > (.data$link_open_date + 365) ~ 1, # mark as amalgamation by date where school closed more than a year after open date
                                                                                                TRUE ~ 0))
@@ -218,8 +210,16 @@ prep.ofsted.links.data <- function(gias_date){
                                                                 (is.na(.data$urn_reason_establishment_closed) | .data$urn_reason_establishment_closed != 1) &
                                                                   (is.na(.data$link_reason_establishment_opened) | .data$link_reason_establishment_opened != 1))
 
+  # use the number of successors to a single predecessor URN to remove any remaining splits
+  identify_splits <- dplyr::group_by(amalgamations_mergers_splits_removed_by_gias, .data$urn)
+
+  identify_splits <- dplyr::mutate(identify_splits,
+                                   n_schools = dplyr::n())
+
+  splits_removed <- dplyr::filter(identify_splits, .data$n_schools == 1)
+
   # use the number of predecessors to a single link URN to remove any remaining merges
-  merges_removed_by_n_predecessors <- dplyr::group_by(amalgamations_mergers_splits_removed_by_gias,
+  merges_removed_by_n_predecessors <- dplyr::group_by(splits_removed,
                                                       .data$link_urn)
 
   merges_removed_by_n_predecessors <- dplyr::mutate(merges_removed_by_n_predecessors,
@@ -306,7 +306,15 @@ urn.links.no.splits <- function(gias_date, cut_off_date){
 
   urn_list <- links.data.clean.links(gias_date)
 
-  all_urn_links <- identify.links.iteratively(urn_list, gias_date, cut_off_date)
+  # use the number of successors to a single predecessor URN to remove any remaining splits
+  identify_splits <- dplyr::group_by(urn_list, .data$urn)
+
+  identify_splits <- dplyr::mutate(identify_splits,
+                                   n_schools = dplyr::n())
+
+  splits_removed <- dplyr::filter(identify_splits, .data$n_schools == 1)
+
+  all_urn_links <- identify.links.iteratively(identify_splits, gias_date, cut_off_date)
 
   all_urn_links
 }
@@ -330,6 +338,24 @@ ofsted.urn.links <- function(gias_date, cut_off_date){
   urn_list <- prep.ofsted.links.data(gias_date)
 
   ofsted_urn_links <- identify.links.iteratively(urn_list, gias_date, cut_off_date)
+
+  # ADD BACK IN EXCEPTIONS---
+  # add predecessor for 146701 - patch prior to fixing code if the cut date is after 31 December 2018 (link date)
+  if(cut_off_date >= as.Date("2018-12-31")) {
+    ofsted_urn_links <- rbind(ofsted_urn_links, c(103232, 146701))
+  }
+
+
+  # add new current URN 146372 to replace 144772 - patch prior to fixing code
+  if(cut_off_date >= as.Date("2018-08-31")) {
+    ofsted_urn_links <- dplyr::mutate(ofsted_urn_links,
+                                      current_urn = dplyr::case_when(current_urn == "144772" ~ "146372",
+                                                                     TRUE ~ current_urn))
+  }
+
+  if(cut_off_date >= as.Date("2020-10-01")) {
+    ofsted_urn_links <- rbind(ofsted_urn_links, c(125975, 148184))
+  }
 
   ofsted_urn_links
 }
