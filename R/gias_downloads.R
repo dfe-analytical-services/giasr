@@ -164,7 +164,20 @@ links.data.add.info <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
-  state_schools_w_status <- state.schools.data(gias_date)
+  gias_establishment_data <- gias.estab.fields(gias_date)
+
+  establishment_status <- dplyr::transmute(gias_establishment_data,
+                                           .data$urn,
+                                           .data$establishment_name,
+                                           .data$type_of_establishment_name,
+                                           .data$phase_of_education_name,
+                                           open_date = as.Date(.data$open_date, "%d-%m-%Y"),
+                                           close_date = as.Date(.data$close_date, "%d-%m-%Y"),
+                                           reason_establishment_closed = .data$reason_establishment_closed_code,
+                                           reason_establishment_opened = .data$reason_establishment_opened_code,
+                                           establishment_status = .data$establishment_status_name,
+                                           .data$statutory_low_age,
+                                           .data$statutory_high_age)
 
   links_data <- prep.gias.links.data(gias_date)
 
@@ -203,7 +216,7 @@ links.data.add.info <- function(gias_date){
                                      .keep_all = TRUE)
 
   # add additional status data for URN
-  successor_links_status <- dplyr::left_join(state_schools_w_status, successor_links, by = "urn")
+  successor_links_status <- dplyr::left_join(establishment_status, successor_links, by = "urn")
 
   # remove entries with no links
   successor_links_status <- dplyr::filter(successor_links_status, !is.na(.data$link_urn))
@@ -227,7 +240,7 @@ links.data.add.info <- function(gias_date){
 
   # add additional status data for link_urn
   successor_info <- dplyr::left_join(predecessor_info,
-                                     state_schools_w_status,
+                                     establishment_status,
                                      by = c("link_urn" = "urn"))
 
   urn_info <- dplyr::transmute(successor_info,

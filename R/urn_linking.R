@@ -123,7 +123,20 @@ links.data.clean.links <- function(gias_date){
 #' @param cut_off_date the cut off date for current school opening, defaults to first day of current month if not entered
 #' @noRd
 identify.links.iteratively <- function(urn_list, gias_date, cut_off_date){
-  establishment_status_data <- state.schools.data(gias_date)
+  gias_establishment_data <- gias.estab.fields(gias_date)
+
+  establishment_status_data <- dplyr::transmute(gias_establishment_data,
+                                                .data$urn,
+                                                .data$establishment_name,
+                                                .data$type_of_establishment_name,
+                                                .data$phase_of_education_name,
+                                                open_date = as.Date(.data$open_date, "%d-%m-%Y"),
+                                                close_date = as.Date(.data$close_date, "%d-%m-%Y"),
+                                                reason_establishment_closed = .data$reason_establishment_closed_code,
+                                                reason_establishment_opened = .data$reason_establishment_opened_code,
+                                                establishment_status = .data$establishment_status_name,
+                                                .data$statutory_low_age,
+                                                .data$statutory_high_age)
 
   # Create base table for looping
   current_urn <- dplyr::filter(establishment_status_data,
