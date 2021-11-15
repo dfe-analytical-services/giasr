@@ -79,7 +79,10 @@ lad.lookup <- function(gias_date, schools_open_date){
 
   # GET LAD SPATIAL DATA
   # NOTE: This is to the full resolution file as the lower resolution data omits schools that are on the boundaries cut out when generalised this is therefore a large download
-  geojson_url <- "https://opendata.arcgis.com/datasets/c8165cd6d0e7486699dccaa92b421469_0.geojson" # NB this is UK boundaries
+  geojson_url <- "http://geoportal1-ons.opendata.arcgis.com/datasets/26d3055941bb4434acad33cc13cd1bb0_0.geojson?outSR={%22latestWkid%22:27700,%22wkid%22:27700}"
+
+  # alternative link if the above fails
+  #geojson_url <- "https://opendata.arcgis.com/datasets/c8165cd6d0e7486699dccaa92b421469_0.geojson" # NB this is UK boundaries
 
   # create path for geojson data
   file_path_lads_2018 <- file.path(tmp_dir, "location_data_2018.geojson")
