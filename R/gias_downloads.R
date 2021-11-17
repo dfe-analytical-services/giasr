@@ -91,7 +91,9 @@ gias.estab.fields <- function(gias_date){
                                                  sen_unit_on_roll = as.numeric(.data$sen_unit_on_roll),
                                                  sen_unit_capacity = as.numeric(.data$sen_unit_capacity),
                                                  sen_stat = as.numeric(.data$sen_stat),
-                                                 sen_no_stat = as.numeric(.data$sen_no_stat))
+                                                 sen_no_stat = as.numeric(.data$sen_no_stat),
+                                                 easting = as.numeric(.data$easting),
+                                                 northing = as.numeric(.data$northing))
 }
 
 #' Download GIAS Establishment Links Data
