@@ -95,7 +95,7 @@ lad.lookup <- function(gias_date, schools_open_date){
 
   #Hot fix that should work for all users, assuming they have synced up to our onedrive - should be updated to be more general
   User<-Sys.info()[["user"]]
-  lads_2018 <- sf::read_sf(paste0("C:/Users/",User,"/Department for Education/Documents - Infrastructure & Funding Analysis/School_Educational_Performance/School_Improvement/place-based-analyses/Data/lad_2018.geojson"))
+  lads_2018 <- sf::read_sf(paste0("C:/Users/",User,"/Department for Education/Infrastructure & Funding Analysis - Documents/School_Educational_Performance/School_Improvement/place-based-analyses/Data/lad_2018.geojson"))
 
   no_2018_lad <- dplyr::filter(school_location_data,
                                is.na(.data$lad_2018))
