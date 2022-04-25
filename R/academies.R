@@ -62,7 +62,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   # Read data from sponsored and converter sheets ------------------------
   if(sponsored == TRUE){
-    current_pipeline_sponsored <- readxl::read_xlsx(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor Pipeline")
+    current_pipeline_sponsored <- readxl::read_xlsx(pipeline_file, skip = 5, na = na_strings, sheet = "Sponsor Pipeline")
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
     current_pipeline_sponsored <- dplyr::mutate(current_pipeline_sponsored,
                                                 project_approval_month = as.Date(format(.data$project_approval_month, "%Y-%m-%d"),
