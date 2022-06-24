@@ -7,11 +7,12 @@ TODO: Give a short introduction of your project. Let this section explain the ob
 This package is not availble on the CRAN and so cannot be installed in the normal way. In order to use the package, you must manually install it by:
 - Download the package by clicking the three dots on the righthand side of the screen next to "Set up build" and "Clone". Then click "Download as Zip".
 - The zipped file is now on your hard drive somewhere. Unzip the file by right clicking on the zipped folder and clicking extract. 
+- Install the two dependencies of the package, "janitor" and "sf". 
 - In R, run the following code in the terminal, editting the "..." to be the path to the package. 
     install.packages("C:/Users/.../giasr", repos = NULL, type = "source")
 - This should run without errors and you can now use the package as you would any other package (i.e. by loading it in with the "Library" function).
 
-Common errors in this process include: Not unzipping the folder, Not using the correct path to the file
+Common errors in this process include: Not unzipping the folder, Not using the correct path to the file, Not installing the dependencies
 
 2.	Software dependencies
 3.	Latest releases
