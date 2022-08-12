@@ -77,25 +77,23 @@ lad.lookup <- function(gias_date, schools_open_date){
                                        .data$lad_2018,
                                        lad_2018cd = .data$district_administrative_code)
 
-  #Commented out lines 81-94 as this was leading to errors
-  ## GET LAD SPATIAL DATA
-  ## NOTE: This is to the full resolution file as the lower resolution data omits schools that are on the boundaries cut out when generalised this is therefore a large download
+  # GET LAD SPATIAL DATA
+  # NOTE: This is to the full resolution file as the lower resolution data omits schools that are on the boundaries cut out when generalised this is therefore a large download
   #geojson_url <- "http://geoportal1-ons.opendata.arcgis.com/datasets/26d3055941bb4434acad33cc13cd1bb0_0.geojson"
-  #
-  ## alternative link if the above fails
-  ##geojson_url <- "https://opendata.arcgis.com/datasets/c8165cd6d0e7486699dccaa92b421469_0.geojson" # NB this is UK boundaries
-  #
-  ## create path for geojson data
-  #file_path_lads_2018 <- file.path(tmp_dir, "location_data_2018.geojson")
-  #
-  ## download from the URL to the filepath specified
-  #if(!file.exists(file_path_lads_2018)){
-  #  utils::download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file_path_lads_2018)
-  #}
 
-  #Hot fix that should work for all users, assuming they have synced up to our onedrive - should be updated to be more general
-  User<-Sys.info()[["user"]]
-  lads_2018 <- sf::read_sf(paste0("C:/Users/",User,"/Department for Education/Infrastructure & Funding Analysis - Documents/School_Educational_Performance/School_Improvement/place-based-analyses/Data/lad_2018.geojson"))
+  # # alternative link if the above fails
+  # geojson_url <- "https://opendata.arcgis.com/datasets/c8165cd6d0e7486699dccaa92b421469_0.geojson" # NB this is UK boundaries
+  #
+  # # create path for geojson data
+  # file_path_lads_2018 <- file.path(tmp_dir, "location_data_2018.geojson")
+  #
+  # # download from the URL to the filepath specified
+  # if(!file.exists(file_path_lads_2018)){
+  #   utils::download.file(geojson_url, mode = "wb", method = "libcurl", destfile = file_path_lads_2018)
+  # }
+
+#  lads_2018 <- sf::read_sf("C:/Users/rdrake/OneDrive - Department for Education/Documents - Infrastructure & Funding Analysis/School_Educational_Performance/School_Improvement/place-based-analyses/Data/lad_2018.geojson")
+  lads_2018 <- sf::read_sf(paste0("C:/Users/pchapman/OneDrive - Department for Education/Documents/STPA/R/giasr/Data/lad_2018.geojson"))
 
   no_2018_lad <- dplyr::filter(school_location_data,
                                is.na(.data$lad_2018))
