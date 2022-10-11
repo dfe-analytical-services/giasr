@@ -342,7 +342,10 @@ ofsted.urn.links <- function(gias_date, cut_off_date){
   # ADD BACK IN EXCEPTIONS---
   # add predecessor for 146701 - patch prior to fixing code if the cut date is after 31 December 2018 (link date)
   if(cut_off_date >= as.Date("2018-12-31")) {
-    ofsted_urn_links <- rbind(ofsted_urn_links, c(103232, 146701))
+    #ofsted_urn_links <- rbind(ofsted_urn_links, c(103232, 146701))
+    ofsted_urn_links <- dplyr::mutate(ofsted_urn_links,
+                                      current_urn = dplyr::case_when(urn == "103232" ~ "146701",
+                                                                     TRUE ~ current_urn))
   }
 
 
@@ -354,7 +357,10 @@ ofsted.urn.links <- function(gias_date, cut_off_date){
   }
 
   if(cut_off_date >= as.Date("2020-10-01")) {
-    ofsted_urn_links <- rbind(ofsted_urn_links, c(125975, 148184))
+    #ofsted_urn_links <- rbind(ofsted_urn_links, c(125975, 148184))
+    ofsted_urn_links <- dplyr::mutate(ofsted_urn_links,
+                                      current_urn = dplyr::case_when(urn == "125975" ~ "148184",
+                                                                     TRUE ~ current_urn))
   }
 
   ofsted_urn_links
