@@ -57,11 +57,11 @@ Schools identified as state funded establishments align with those in external r
 }
 \section{Functions}{
 \itemize{
-\item \code{state.schools}: Identifies all state funded establishments (historic and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
+\item \code{state.schools()}: Identifies all state funded establishments (historic and currently open) as at a specified date, using the GIAS all establishment data released on the selected date.
 
-\item \code{current.state.schools}: Identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
+\item \code{current.state.schools()}: Identifies all currently open state funded establishments as at a specified date, using the GIAS all establishment data released on the selected date.
+
 }}
-
 \examples{
 current.state.schools("2021-06-01", "2021-06-01")
 state.schools("2021-06-01")

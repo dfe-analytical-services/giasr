@@ -32,9 +32,9 @@ The resulting df for \code{urn.links.no.splits} can be used to link and aggregat
 }
 \section{Functions}{
 \itemize{
-\item \code{ofsted.urn.links}: Identifies predecessor-successor links following the Ofsted methodology as at a specified date, using the GIAS all establishment data released on the date provided and open on the date provided.
-}}
+\item \code{ofsted.urn.links()}: Identifies predecessor-successor links following the Ofsted methodology as at a specified date, using the GIAS all establishment data released on the date provided and open on the date provided.
 
+}}
 \examples{
 urn.links.no.splits("2021-06-01", "2021-06-01")
 ofsted.urn.links("2021-06-01", "2021-06-01")

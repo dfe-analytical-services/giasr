@@ -28,9 +28,9 @@ NOTE: due to the size of the datasets and amount of processing required to outpu
 }
 \section{Functions}{
 \itemize{
-\item \code{priority.areas}: provides a df of all state funded establishments with 2018, 2019, and 2020 LAD locations and OA and/or ONE area membership.
-}}
+\item \code{priority.areas()}: provides a df of all state funded establishments with 2018, 2019, and 2020 LAD locations and OA and/or ONE area membership.
 
+}}
 \examples{
 lad.lookup("2021-06-01", "2021-06-01")
 priority.areas("2021-06-01", "2021-06-01")

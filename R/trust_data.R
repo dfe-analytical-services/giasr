@@ -125,7 +125,7 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
 
   # the data is very messy with multiple entries per trust/school combination
   # These next steps clean up the data to leave just one entry with pragmatic dates
-  trust_history <- dplyr::group_by(linked_academy_info, .data$current_urn, .data$group_id, .data$type_of_establishment_name)
+  trust_history <- dplyr::group_by(linked_academy_info, .data$current_urn, .data$group_id, .data$type_of_establishment_name, .data$phase_of_education_name)
 
   # extract the earliest join dates and latest leaving dates for each school by trust
   trust_history_clean_dates <- dplyr::summarise(trust_history,
