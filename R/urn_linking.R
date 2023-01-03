@@ -314,7 +314,7 @@ urn.links.no.splits <- function(gias_date, cut_off_date){
 
   splits_removed <- dplyr::filter(identify_splits, .data$n_schools == 1)
 
-  all_urn_links <- identify.links.iteratively(identify_splits, gias_date, cut_off_date)
+  all_urn_links <- identify.links.iteratively(splits_removed, gias_date, cut_off_date)
 
   all_urn_links
 }
