@@ -5,5 +5,6 @@
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
 #' @importFrom rlang .data
+#' @importFrom utils data
 ## usethis namespace: end
 NULL
