@@ -77,10 +77,6 @@ lad.lookup <- function(gias_date, schools_open_date){
                                        .data$lad_2018,
                                        lad_2018cd = .data$district_administrative_code)
 
-  # get lad shape file
-  # data(lads_2018, envir=environment())
-
-
   no_2018_lad <- dplyr::filter(school_location_data,
                                is.na(.data$lad_2018))
 
@@ -100,11 +96,11 @@ lad.lookup <- function(gias_date, schools_open_date){
   no_2018_lad <- sf::st_transform(no_2018_lad,
                                   crs = sf::st_crs(4326))
 
-  no_2018_lad$intersection <- as.integer(sf::st_intersects(no_2018_lad,lads_2018))
+  no_2018_lad$intersection <- as.integer(sf::st_intersects(no_2018_lad,lad_2018))
 
-  no_2018_lad$lad_2018 <- lads_2018$lad18nm[no_2018_lad$intersection]
+  no_2018_lad$lad_2018 <- lad_2018$lad18nm[no_2018_lad$intersection]
 
-  no_2018_lad$lad_2018cd <- lads_2018$lad18cd[no_2018_lad$intersection]
+  no_2018_lad$lad_2018cd <- lad_2018$lad18cd[no_2018_lad$intersection]
 
   schools_w_e_n <- as.data.frame(no_2018_lad)
 
@@ -129,11 +125,11 @@ lad.lookup <- function(gias_date, schools_open_date){
                                                                    .data$district_administrative_name %in% lad_changes ~ paste0(.data$district_administrative_code, "*"),
                                                                    TRUE ~ .data$district_administrative_code))
 
-  school_lads_2018 <- dplyr::bind_rows(schools_w_2018_lads,
+  school_lad_2018 <- dplyr::bind_rows(schools_w_2018_lads,
                                        schools_w_e_n,
                                        schools_no_e_n)
 
-  school_lads <- dplyr::transmute(school_lads_2018,
+  school_lads <- dplyr::transmute(school_lad_2018,
                                   .data$urn,
                                   .data$lad_2018,
                                   lad_2019 = dplyr::case_when(.data$lad_2018 %in% c("Bournemouth", "Poole", "Christchurch") ~ "Bournemouth, Christchurch and Poole",

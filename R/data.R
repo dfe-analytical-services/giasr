@@ -1,22 +1,27 @@
-#' Local Authority Districts - Boundaries
+#' 2018 LADs Geospatial data - sf
 #'
-#' The England subset of Full Extent of the Realm LAD Boundaries UK (December 2018)
-#'
+#' Digital vector boundaries for Local Authority Districts, in Great Britain, as at December 2018.
+#' The BFE boundaries are full resolution – extent of the realm (usually this is the Mean Low Water
+#' mark but in some cases boundaries extend beyond this to include off shore islands).
+#' Contains both Ordnance Survey and ONS Intellectual Property Rights. Used in giasr for historic
+#' analysis where LAD a school is in is important and where 2018 LADs are still used for
+#' program eligibility
 #'
 #' @format ## `lads_2018`
-#' sf with 326 obs. of 11 variables
+#' sf type data with 391 rows and 11 columns:
 #' \describe{
-#'   \item{objcid}{Row number}
-#'   \item{lad18cd}{8 digit LAD code preceded by "E" for England}
-#'   \item{lad18nm}{LAD Name}
-#'   \item{bng_e}{Easting}
-#'   \item{bng_n}{Northing}
+#'   \item{objectid}{Row number}
+#'   \item{lad18cd}{LAD 2018 code}
+#'   \item{lad18nm}{LAD 2018 name}
+#'   \item{lad18nmw}{empty}
+#'   \item{bng_e}{British National Grid - Eastings}
+#'   \item{bng_n}{British National Grid - Northings}
 #'   \item{long}{Longitude}
 #'   \item{lat}{Latitude}
-#'   \item{st_areashape}{Polygon area}
-#'   \item{st_lengthshape}{Polygon length}
-#'   \item{geometry}{Polygon geometry}
+#'   \item{st_areashape}{polygonal geometry information}
+#'   \item{st_lengthshape}{polygonal geometry information}
+#'   \item{geometry}{polygonal geometry information}
 #'   ...
 #' }
-#' @source <https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/LAD_Dec_2018_Boundaries_UK_BFE_2022/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json>
+#' @source <https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2018-full-extent-boundaries-gb/about>
 "lads_2018"
