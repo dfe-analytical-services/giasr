@@ -51,7 +51,8 @@ import.gias.trust.data <- function(gias_date){
 
   academy_info <- readr::read_csv(trust_history_download,
                                   na = na_strings,
-                                  col_types = readr::cols(.default = "c"))
+                                  col_types = readr::cols(.default = "c"),
+                                  locale = readr::locale(encoding = "latin1"))
 
   academy_info_clean <- janitor::clean_names(academy_info)
 

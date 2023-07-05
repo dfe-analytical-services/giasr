@@ -16,7 +16,8 @@ state.schools.data <- function(gias_date){
   # get only data needed from GIAS dataset
   all_schools_type_status <- readr::read_csv(file = gias_download,
                                              na = na_strings,
-                                             col_types = readr::cols(.default = "c"))
+                                             col_types = readr::cols(.default = "c"),
+                                             locale = readr::locale(encoding = "latin1"))
 
   all_schools_type_status <- janitor::clean_names(all_schools_type_status)
 

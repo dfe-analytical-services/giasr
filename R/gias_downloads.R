@@ -65,7 +65,8 @@ gias.estab.fields <- function(gias_date){
 
   gias_establishment_data <- readr::read_csv(gias_download,
                                              na = na_strings,
-                                             col_types = readr::cols(.default = "c"))
+                                             col_types = readr::cols(.default = "c"),
+                                             locale = readr::locale(encoding = "latin1"))
 
   gias_establishment_data_clean <- janitor::clean_names(gias_establishment_data)
 
@@ -148,7 +149,8 @@ prep.gias.links.data <- function(gias_date){
 
   gias_links_data <- readr::read_csv(gias_links_download,
                                      na = na_strings,
-                                     col_types = readr::cols(.default = "c"))
+                                     col_types = readr::cols(.default = "c"),
+                                     locale = readr::locale(encoding = "latin1"))
 
   gias_links_data <-janitor::clean_names(gias_links_data)
 
