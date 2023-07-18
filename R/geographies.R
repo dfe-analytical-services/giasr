@@ -96,11 +96,11 @@ lad.lookup <- function(gias_date, schools_open_date){
   no_2018_lad <- sf::st_transform(no_2018_lad,
                                   crs = sf::st_crs(4326))
 
-  no_2018_lad$intersection <- as.integer(sf::st_intersects(no_2018_lad,lad_2018))
+  no_2018_lad$intersection <- as.integer(sf::st_intersects(no_2018_lad,lads_2018))
 
-  no_2018_lad$lad_2018 <- lad_2018$lad18nm[no_2018_lad$intersection]
+  no_2018_lad$lad_2018 <- lads_2018$lad18nm[no_2018_lad$intersection]
 
-  no_2018_lad$lad_2018cd <- lad_2018$lad18cd[no_2018_lad$intersection]
+  no_2018_lad$lad_2018cd <- lads_2018$lad18cd[no_2018_lad$intersection]
 
   schools_w_e_n <- as.data.frame(no_2018_lad)
 
