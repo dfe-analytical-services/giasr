@@ -5,8 +5,8 @@ This package is designed to simplify downloading and basic data wrangling of pub
 Install the package from GitHub using {remotes}.
 
 ```
-[install.packages](https://rdrr.io/r/utils/install.packages.html)("remotes")  # if not already installed
-remotes::[install_github]("https://remotes.r-lib.org/reference/install_github.html")("dfe-analytical-services/giasr")
+install.packages("remotes")  # if not already installed
+remotes::install_github
 ```
 
 The package depends on {dplyr}, {janitor}, {readr}, {readxl}, {rlang}, {rvest}, {sf}, {tibble}, {utils}, which are also installed with {giasr}.
