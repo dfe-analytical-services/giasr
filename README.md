@@ -6,7 +6,7 @@ Install the package from GitHub using {remotes}.
 
 ```
 install.packages("remotes")  # if not already installed
-remotes::install_github
+remotes::install_github("dfe-analytical-services/giasr")
 ```
 
 The package depends on {dplyr}, {janitor}, {readr}, {readxl}, {rlang}, {rvest}, {sf}, {tibble}, {utils}, which are also installed with {giasr}.
