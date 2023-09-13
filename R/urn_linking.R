@@ -368,6 +368,11 @@ ofsted.urn.links <- function(gias_date, cut_off_date){
                                     current_urn = dplyr::case_when(urn == "106976" ~ "106976",
                                                                    TRUE ~ current_urn))
 
+  # patch to remove the link between 126326, 126391 and 145714 as the first two coexist before 126326 merges into 126391 prior to academisation
+  ofsted_urn_links <- dplyr::mutate(ofsted_urn_links,
+                                    current_urn = dplyr::case_when(urn == "126326" ~ "126326",
+                                                                   TRUE ~ current_urn))
+
   ofsted_urn_links
 }
 
