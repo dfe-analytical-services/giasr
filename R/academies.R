@@ -60,7 +60,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     utils::download.file(current_pipeline_url, mode = "wb", method = "libcurl", destfile = file.path(pipeline_dir, basename(current_pipeline_url)))
   }
 
-  pipeline_cols <- c("text", "numeric", "text", "text", "text", "text", "text", "text", "date", "date")
+  pipeline_cols <- c("numeric", "numeric", "text", "text", "text", "text", "text", "text", "date", "date")
 
   # Read data from sponsored and converter sheets ------------------------
   if(sponsored == TRUE){
