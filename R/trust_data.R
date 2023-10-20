@@ -124,6 +124,9 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   linked_academy_info <- dplyr::filter(linked_academy_info,
                                        !is.na(.data$current_urn))
 
+  linked_academy_info <- dplyr::filter(linked_academy_info,
+                                       !grepl(".old", group_id))
+
   # the data is very messy with multiple entries per trust/school combination
   # These next steps clean up the data to leave just one entry with pragmatic dates
   trust_history <- dplyr::group_by(linked_academy_info, .data$current_urn, .data$group_id, .data$type_of_establishment_name, .data$phase_of_education_name)
