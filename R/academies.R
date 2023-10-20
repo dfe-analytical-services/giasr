@@ -58,15 +58,14 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   if(!file.exists(pipeline_file)){
     utils::download.file(current_pipeline_url, mode = "wb", method = "libcurl", destfile = file.path(pipeline_dir, basename(current_pipeline_url)))
-    }
+  }
+
+  pipeline_cols <- c("text", "numeric", "text", "text", "text", "text", "text", "text", "date", "date")
 
   # Read data from sponsored and converter sheets ------------------------
   if(sponsored == TRUE){
-    current_pipeline_sponsored <- readxl::read_xlsx(pipeline_file, skip = 5, na = na_strings, sheet = "Sponsor Pipeline")
+    current_pipeline_sponsored <- suppressWarnings(readxl::read_xlsx(pipeline_file, skip = 5, na = na_strings, sheet = "Sponsor Pipeline", col_types = pipeline_cols))
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
-    current_pipeline_sponsored <- dplyr::mutate(current_pipeline_sponsored,
-                                                project_approval_month = as.Date(format(.data$project_approval_month, "%Y-%m-%d"),
-                                                proposed_opening_date = as.Date(format(.data$proposed_opening_date, "%Y-%m-%d"))))
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
                                                         .data$urn,
