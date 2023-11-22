@@ -18,4 +18,4 @@ if(!file.exists(file_path_lads_2018)){
 
 lads_2018 <- sf::read_sf(file_path_lads_2018)
 
-usethis::use_data(lads_2018, overwrite = TRUE)
+usethis::use_data(lads_2018, compress = "xz", internal = TRUE)
