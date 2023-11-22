@@ -58,7 +58,11 @@ import.gias.trust.data <- function(gias_date){
 
   academy_info_clean <- dplyr::mutate(academy_info_clean,
                                       date_joined_group = as.Date(.data$date_joined_group),
-                                      date_left_group = as.Date(.data$date_left_group))
+                                      date_left_group = as.Date(.data$date_left_group),
+                                      establishment_close_date = as.Date(.data$establishment_close_date),
+                                      establishment_open_date = as.Date(.data$establishment_open_date),
+                                      group_open_date = as.Date(.data$group_open_date),
+                                      group_closed_date = as.Date(.data$group_closed_date))
 
   academy_info_clean <- dplyr::filter(academy_info_clean,
                                       !is.na(.data$urn))
@@ -125,23 +129,27 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
                                        !is.na(.data$current_urn))
 
   linked_academy_info <- dplyr::filter(linked_academy_info,
-                                       !grepl(".old", group_id))
+                                       !grepl(".old", .data$group_id))
+
 
   # the data is very messy with multiple entries per trust/school combination
   # These next steps clean up the data to leave just one entry with pragmatic dates
-  trust_history <- dplyr::group_by(linked_academy_info, .data$current_urn, .data$group_id, .data$type_of_establishment_name, .data$phase_of_education_name)
+  trust_history <- dplyr::group_by(linked_academy_info, .data$current_urn, .data$urn, .data$group_id, .data$type_of_establishment_name, .data$phase_of_education_name)
 
   # extract the earliest join dates and latest leaving dates for each school by trust
   trust_history_clean_dates <- dplyr::summarise(trust_history,
                                                 date_joined_group = min(.data$date_joined_group),
                                                 date_left_group = max(.data$date_left_group),
+                                                establishment_close_date = min(.data$establishment_close_date),
                                                 .groups = "drop")
-
-  trust_history_clean_dates <- dplyr::distinct(trust_history_clean_dates)
 
   # filter out links to trusts "joined" for 2 months or fewer
   trust_history_clean_dates <- dplyr::filter(trust_history_clean_dates,
                                              is.na(.data$date_left_group) | .data$date_left_group > .data$date_joined_group + 62)
+
+  # filter out schools that closed 2 months or less after joining a group
+  trust_history_clean_dates <- dplyr::filter(trust_history_clean_dates,
+                                       is.na(.data$establishment_close_date) | (.data$establishment_close_date > .data$date_joined_group + 62))
 
   # remove observations with no group_id
   trust_history_no_group_id_removed <- dplyr::filter(trust_history_clean_dates, !is.na(.data$group_id))
