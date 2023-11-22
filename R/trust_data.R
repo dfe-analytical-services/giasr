@@ -164,8 +164,13 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   trust_list <- dplyr::group_by(trust_list,
                                 .data$group_id)
 
+
+  trust_list <- dplyr::mutate(trust_list,
+                              n = n())
+
+  # get rid of the SATs that "closed" to become MATs
   trust_list <- dplyr::filter(trust_list,
-                              dplyr::n() == 1 | (dplyr::n() > 1 & .data$group_status == "Open"))
+                                    n == 1 | (n > 1 & .data$group_status == "Open"))
 
   trust_list <- dplyr::ungroup(trust_list)
 
