@@ -136,8 +136,11 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   # These next steps clean up the data to leave just one entry with pragmatic dates
   trust_history <- dplyr::group_by(linked_academy_info, current_urn, urn, group_id, type_of_establishment_name, phase_of_education_name)
 
+  trust_history_infer_join_date <- dplyr::mutate(trust_history,
+                                                 date_joined_group = dplyr::if_else(is.na(date_joined_group), establishment_open_date, date_joined_group))
+
   # filter out links to trusts "joined" for 2 months or fewer
-  trust_history_remove_short_stay <- dplyr::filter(trust_history,
+  trust_history_remove_short_stay <- dplyr::filter(trust_history_infer_join_date,
                                              is.na(date_left_group) | date_left_group > date_joined_group + 62)
 
   # filter out schools that closed 2 months or less after joining a group
