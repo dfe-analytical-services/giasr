@@ -156,9 +156,6 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
                                                 establishment_close_date = min(establishment_close_date),
                                                 .groups = "drop")
 
-  # remove observations with no group_id
-  trust_history_no_group_id_removed <- dplyr::filter(trust_history_clean_dates, !is.na(group_id))
-
   # get a list of all trusts
   trust_list <- dplyr::select(linked_academy_info,
                               group_id,
@@ -186,7 +183,7 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
 
 
   # remove and update individual incorrect instances - see QA doc for info
-  trust_history_non_existent_trusts <- dplyr::filter(trust_history_no_group_id_removed,
+  trust_history_non_existent_trusts <- dplyr::filter(trust_history_clean_dates,
                                                      # trusts that don't seem to exist
                                                      !group_id %in% c("TR00670", "TR00340", "TR02585", "TR02314", "TR03305.old", "TR03461"))
 
