@@ -189,7 +189,6 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
 
   trust_history_remove_wrong_trust <- dplyr::filter(trust_history_non_existent_trusts,
                                                     # remove instances of schools registered with the wrong trust
-                                                    !(current_urn == "142285" & group_id == "TR02253") &
                                                       !(current_urn %in% c("144067", "144068", "145233") & group_id == "TR02659") &
                                                       !(current_urn == "145482" & group_id == "TR01769") &
                                                       !(current_urn == "147177" & group_id == "TR00674") &
@@ -217,6 +216,8 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
                                                                                     current_urn == "139828" & group_id == "TR00307" ~ as.Date("2016-02-01"),
                                                                                     current_urn == "136665" & group_id == "TR00691" ~ as.Date("2011-04-01"),
                                                                                     current_urn == "137156" & group_id == "TR01307" ~ as.Date("2011-08-01"),
+                                                                                    current_urn == "150811" & group_id == "TR00552" ~ as.Date("2015-07-01"),
+                                                                                    current_urn == "150811" & group_id == "TR02253" ~ as.Date("2015-11-01"),
                                                                                     TRUE ~ date_joined_group),
                                                date_left_group = dplyr::case_when(current_urn == "140533" & group_id == "TR00411" ~ as.Date("2016-08-31"),
                                                                                   current_urn == "140919" & group_id == "TR02665" ~ as.Date("2016-09-30"),
@@ -228,6 +229,7 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
                                                                                   current_urn == "143427" & group_id == "TR01685" ~ as.Date("2016-08-31"),
                                                                                   current_urn == "143428" & group_id == "TR00432" ~ as.Date("2016-08-31"),
                                                                                   current_urn == "142762" & group_id == "TR01385" ~ as.Date("2016-03-01"),
+                                                                                  current_urn == "150811" & group_id == "TR00552" ~ as.Date("2015-10-31"),
                                                                                   TRUE ~ date_left_group))
 
   # correct issues where school is noted as both converter and sponsor
