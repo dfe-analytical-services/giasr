@@ -15,7 +15,7 @@ Imports:
     dplyr,
     janitor,
     readr,
-    readxl,
+    readODS,
     rlang,
     rvest,
     sf,
