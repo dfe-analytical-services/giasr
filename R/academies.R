@@ -47,7 +47,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   current_pipeline_url <- tibble::as_tibble(current_pipeline_url)
 
-  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", .data$value) & grepl(".xlsx", .data$value))
+  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", .data$value) & grepl(".ods", .data$value))
 
   current_pipeline_url <- dplyr::slice_head(current_pipeline_url) # leaves only the top link (usually the most recent)
 
@@ -60,29 +60,28 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
     utils::download.file(current_pipeline_url, mode = "wb", method = "libcurl", destfile = file.path(pipeline_dir, basename(current_pipeline_url)))
   }
 
-  pipeline_cols <- c("numeric", "numeric", "text", "text", "text", "text", "text", "text", "date", "date")
 
   # Read data from sponsored and converter sheets ------------------------
   if(sponsored == TRUE){
-    current_pipeline_sponsored <- suppressWarnings(readxl::read_xlsx(pipeline_file, skip = 5, na = na_strings, sheet = "Sponsor Pipeline", col_types = pipeline_cols))
+    current_pipeline_sponsored <- suppressWarnings(readODS::read_ods(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor_Pipeline"))
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
                                                         .data$urn,
-                                                        approval_date = .data$project_approval_month,
+                                                        approval_date = as.Date(paste0("01-", .data$project_approval_month), format = "%d-%b-%y"),
                                                         .data$name_of_matched_sponsor,
-                                                        .data$proposed_opening_date,
+                                                        proposed_opening_date = as.Date(.data$proposed_opening_date, format = "%d/%m/%Y"),
                                                         academy_type = "sponsored")
 
     pipeline_info <- current_sponsored_pipeline_info
   }
 
   if(converter == TRUE){
-    current_pipeline_converter <- readxl::read_xlsx(pipeline_file, skip = 7, na = na_strings, sheet = "Converter Pipeline")
+    current_pipeline_converter <- readODS::read_ods(pipeline_file, skip = 8, na = na_strings, sheet = "Converter_Pipeline")
     current_pipeline_converter <- janitor::clean_names(current_pipeline_converter)
     current_pipeline_converter <- dplyr::mutate(current_pipeline_converter,
-                                                application_date = as.Date(format(.data$application_date, "%Y-%m-%d")),
-                                                application_approved_date = as.Date(format(.data$application_approved_date, "%Y-%m-%d")))
+                                                application_date = as.Date(.data$application_date, format = "%d/%m/%Y"),
+                                                application_approved_date = as.Date(.data$application_approved_date, format = "%d/%m/%Y"))
 
     current_converter_pipeline_info <- dplyr::transmute(current_pipeline_converter,
                                                         .data$urn,
