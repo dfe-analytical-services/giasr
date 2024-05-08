@@ -47,7 +47,7 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   current_pipeline_url <- tibble::as_tibble(current_pipeline_url)
 
-  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", .data$value) & grepl(".ods", .data$value))
+  current_pipeline_url <- dplyr::filter(current_pipeline_url, grepl("https://assets.publishing.service.gov.uk/", .data$value) & grepl(".ods|.xlsx", .data$value))
 
   current_pipeline_url <- dplyr::slice_head(current_pipeline_url) # leaves only the top link (usually the most recent)
 
@@ -63,7 +63,13 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
   # Read data from sponsored and converter sheets ------------------------
   if(sponsored == TRUE){
-    current_pipeline_sponsored <- suppressWarnings(readODS::read_ods(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor_Pipeline"))
+
+    if(grepl(".ods", pipeline_file)){
+      current_pipeline_sponsored <- suppressWarnings(readODS::read_ods(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor_Pipeline"))
+    }else{
+      current_pipeline_sponsored <- suppressWarnings(readxl::read_xlsx(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor Pipeline"))
+    }
+
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
 
     current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
@@ -77,7 +83,13 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
   }
 
   if(converter == TRUE){
-    current_pipeline_converter <- readODS::read_ods(pipeline_file, skip = 8, na = na_strings, sheet = "Converter_Pipeline")
+
+    if(grepl(".ods", pipeline_file)){
+      current_pipeline_converter <- suppressWarnings(readODS::read_ods(pipeline_file, skip = 8, na = na_strings, sheet = "Converter_Pipeline"))
+    }else{
+      current_pipeline_converter <- suppressWarnings(readxl::read_xlsx(pipeline_file, skip = 8, na = na_strings, sheet = "Converter Pipeline"))
+    }
+
     current_pipeline_converter <- janitor::clean_names(current_pipeline_converter)
     current_pipeline_converter <- dplyr::mutate(current_pipeline_converter,
                                                 application_date = as.Date(.data$application_date, format = "%d/%m/%Y"),
