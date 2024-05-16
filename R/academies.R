@@ -66,8 +66,27 @@ academy.pipeline <- function(converter = TRUE, sponsored = TRUE){
 
     if(grepl(".ods", pipeline_file)){
       current_pipeline_sponsored <- suppressWarnings(readODS::read_ods(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor_Pipeline"))
+
+      current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
+
+      current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
+                                                          .data$urn,
+                                                          approval_date = as.Date(paste0("01-", .data$project_approval_month), format = "%d-%b-%y"),
+                                                          .data$name_of_matched_sponsor,
+                                                          proposed_opening_date = as.Date(.data$proposed_opening_date, format = "%d/%m/%Y"),
+                                                          academy_type = "sponsored")
+
     }else{
       current_pipeline_sponsored <- suppressWarnings(readxl::read_xlsx(pipeline_file, skip = 6, na = na_strings, sheet = "Sponsor Pipeline"))
+
+      current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
+
+      current_sponsored_pipeline_info <- dplyr::transmute(current_pipeline_sponsored,
+                                                          .data$urn,
+                                                          approval_date = as.Date(.data$project_approval_month, format = "%d-%b-%y"),
+                                                          .data$name_of_matched_sponsor,
+                                                          proposed_opening_date = as.Date(.data$proposed_opening_date, format = "%d/%m/%Y"),
+                                                          academy_type = "sponsored")
     }
 
     current_pipeline_sponsored <- janitor::clean_names(current_pipeline_sponsored)
