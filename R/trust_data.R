@@ -147,10 +147,14 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   trust_history_remove_short_stay <- dplyr::filter(trust_history_remove_short_stay,
                                              is.na(.data$establishment_close_date) | (.data$establishment_close_date > .data$date_joined_group + 62))
 
+  # filter out trusts that closed before the school joined
+  trust_history_remove_closed_trusts <- dplyr::filter(trust_history_remove_short_stay,
+                                                      .data$group_closed_date > .data$date_joined_group | is.na(.data$group_closed_date))
+
 
 
   # extract the earliest join dates and latest leaving dates for each school by trust
-  trust_history_clean_dates <- dplyr::summarise(trust_history_remove_short_stay,
+  trust_history_clean_dates <- dplyr::summarise(trust_history_remove_closed_trusts,
                                                 date_joined_group = min(.data$date_joined_group),
                                                 date_left_group = max(.data$date_left_group),
                                                 establishment_close_date = min(.data$establishment_close_date),
