@@ -81,7 +81,7 @@ gias.estab.fields <- function(gias_date){
                                                  number_of_boys = as.numeric(.data$number_of_boys),
                                                  number_of_girls = as.numeric(.data$number_of_girls),
                                                  percentage_fsm = as.numeric(.data$percentage_fsm),
-                                                 ofsted_last_insp = as.Date(.data$ofsted_last_insp, "%d-%m-%Y"),
+                                                 #ofsted_last_insp = as.Date(.data$ofsted_last_insp, "%d-%m-%Y"), ### No longer in GIAS file
                                                  last_changed_date = as.Date(.data$last_changed_date, "%d-%m-%Y"),
                                                  date_of_last_inspection_visit = as.Date(.data$date_of_last_inspection_visit, "%d-%m-%Y"),
                                                  next_inspection_visit = as.Date(.data$next_inspection_visit, "%d-%m-%Y"),
