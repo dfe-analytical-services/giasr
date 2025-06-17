@@ -261,7 +261,7 @@ links.data.add.info <- function(gias_date){
                                .data$urn_establishment_status,
                                .data$urn_open_date,
                                .data$urn_close_date,
-                               .data$ urn_reason_establishment_closed,
+                               .data$urn_reason_establishment_closed,
                                .data$urn_reason_establishment_opened,
                                .data$urn_phase_of_education,
                                .data$urn_statutory_low_age,
