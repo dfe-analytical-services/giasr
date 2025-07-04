@@ -89,7 +89,7 @@ state.schools.data <- function(gias_date){
                                      general_type_group = dplyr::case_when(.data$type_of_establishment_name %in% academy_list ~ "Academies",
                                                                            .data$type_of_establishment_name %in% la_maintained_list ~ "Local authority maintained schools"))
   state_schools_data <- dplyr::filter(state_school_flag,
-                                      .data$phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded Special school", "Pupil referral unit"))
+                                      .data$phase_type_grouping %in% c("State-funded Nursery", "State-funded Primary", "State-funded Secondary", "State-funded 16 plus", "State-funded Special school", "Pupil referral unit"))
 
   state_schools_data
 }
@@ -132,7 +132,7 @@ state.schools.data <- function(gias_date){
 #' * Voluntary controlled school
 #'
 #' @return A list of state funded establishment URNs along with the following variables:
-#' * `phase_type_grouping`: State-funded Nursery, State-funded Primary, State-funded Secondary, State-funded Special school, Pupil referral unit
+#' * `phase_type_grouping`: State-funded Nursery, State-funded Primary, State-funded Secondary, State-funded 16 plus, State-funded Special school, Pupil referral unit
 #' * `general_type_group`: Academies, Local Authority Maintained
 #' * `type_of_establishment_name`: GIAS fields
 #' * `phase_of_education_name`: GIAS fields
