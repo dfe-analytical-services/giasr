@@ -7,6 +7,11 @@ download.gias.trust.history <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
+  }
+
   # create a temporary directory
   tmp_dir <- tempdir()
 
@@ -42,6 +47,11 @@ import.gias.trust.data <- function(gias_date){
   # set gias_date to start of month if not provided
   if(missing(gias_date)){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
+  }
+
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
   }
 
   trust_history_download <- download.gias.trust.history(gias_date)
@@ -101,6 +111,11 @@ academies.trust.data <- function(gias_date, cut_off_date, urn_link_type = "ofste
   # set gias_date to start of month if not provided
   if(missing(gias_date)){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
+  }
+
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
   }
 
   # set cut_off_date to start of month if not provided

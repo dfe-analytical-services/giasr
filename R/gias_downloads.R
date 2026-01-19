@@ -8,6 +8,11 @@ download.gias.estab.fields <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
+  }
+
   # create a temporary directory
   tmp_dir <- tempdir()
 
@@ -58,6 +63,11 @@ gias.estab.fields <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
+  }
+
   gias_download <- download.gias.estab.fields(gias_date)
 
   # define NA strings
@@ -106,6 +116,11 @@ download.gias.links.data <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
+  }
+
   # create a temporary directory
   tmp_dir <- tempdir()
 
@@ -142,6 +157,11 @@ prep.gias.links.data <- function(gias_date){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
   }
 
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
+  }
+
   # define NA strings
   na_strings <- c("NA", "NULL", "", "-", "Not applicable", "Does not apply", " ", "None", "..")
 
@@ -168,6 +188,11 @@ links.data.add.info <- function(gias_date){
   # set gias_date to start of month if not provided
   if(missing(gias_date)){
     gias_date <- as.Date(cut(Sys.Date(), "month"))
+  }
+
+  if(gias_date == "2026-01-01"){
+    gias_date <- as.Date(gias_date)+1
+    warning("There are no GIAS data available for 2026-01-01. giasr functions will use 2026-01-02 unless otherwise specified.")
   }
 
   gias_establishment_data <- gias.estab.fields(gias_date)
